@@ -1,0 +1,20 @@
+{
+  "name": "android-js-engine",
+  "version": "1.0.0",
+  "description": "qy-js-engine是Hermes的java封装。功能与iOS的JSCore类似。支持Android应用在Hermes引擎上执行JS。",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hermes-engine": "^0.2.1",
+    "jsc-android": "^245459.0.0",
+    "v8-android-nointl": "^8.80.1"
+  }
+}

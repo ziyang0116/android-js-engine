@@ -1,0 +1,3 @@
+include ':common-js-engine'
+include ':demo'
+rootProject.name='android-js-engine'

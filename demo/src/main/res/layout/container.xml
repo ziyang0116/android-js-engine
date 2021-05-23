@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/groupText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="12dp">
+    </TextView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"/>
+
+    <Button
+        android:id="@+id/loadScriptFromString"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="loadScriptFromString"
+        android:layout_marginLeft="12dp"/>
+
+    <Button
+        android:id="@+id/loadScriptFromAssets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="loadScriptFromAssets"
+        android:layout_marginLeft="12dp"/>
+
+    <Button
+        android:id="@+id/callJSFunctionSync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="callJSFunctionSync"
+        android:layout_marginLeft="12dp"/>
+
+    <Button
+        android:id="@+id/callJSFunction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="callJSFunction"
+        android:layout_marginLeft="12dp"/>
+
+
+</LinearLayout>

@@ -1,0 +1,145 @@
+plugins {
+    id 'com.android.library'
+}
+
+def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+
+task createNativeDepsDirectories {
+    thirdPartyNdkDir.mkdirs()
+}
+
+task prepareHermes(dependsOn: createNativeDepsDirectories) {
+    def hermesAAR = file("$projectDir/../node_modules/hermes-engine/android/hermes-debug.aar")
+    if (!hermesAAR.exists()) {
+        // For an app to build from RN source, hermes-engine is located at /path/to/app/node_modules
+        // and $projectDir is located at /path/to/app/node_modules/react-native/ReactAndroid
+        hermesAAR = file("$projectDir/../../hermes-engine/android/hermes-debug.aar")
+
+        if (!hermesAAR.exists()) {
+            // At Facebook, this file is in a different folder
+            hermesAAR = file("$projectDir/../../node_modules/hermes-engine/android/hermes-debug.aar")
+        }
+    }
+    def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
+
+    copy {
+        from soFiles
+        into "$thirdPartyNdkDir/hermes"
+    }
+}
+
+task prepareJSC(dependsOn: createNativeDepsDirectories) {
+    doLast {
+        def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
+        if (!jscPackageRoot.exists()) {
+            // For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
+            // and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
+            jscPackageRoot = file("$projectDir/../../jsc-android/dist")
+        }
+        def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+
+        def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
+
+        copy {
+            from(soFiles)
+            from(headerFiles)
+            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
+            includeEmptyDirs(false)
+            into("$thirdPartyNdkDir/jsc")
+        }
+    }
+}
+
+
+task prepareV8(dependsOn: createNativeDepsDirectories) {
+    doLast {
+        def v8PackagePath = file("$projectDir/../node_modules/v8-android-nointl")
+        if (!v8PackagePath) {
+            throw new GradleScriptException("Could not find the v8-android npm package")
+        }
+
+        def v8Dist = file("$v8PackagePath/dist")
+        if (!v8Dist.exists()) {
+            throw new GradleScriptException("The v8-android npm package is missing its \"dist\" directory")
+        }
+
+        def v8AAR = fileTree(v8Dist).matching({ it.include "**/v8-android/**/*.aar" }).singleFile
+        def soFiles = zipTree(v8AAR).matching({ it.include "**/*.so" })
+        def headerFiles = fileTree(v8Dist).matching({ it.include "**/include/**" })
+
+        copy {
+            from(soFiles)
+            from(headerFiles)
+            includeEmptyDirs(false)
+            into("$thirdPartyNdkDir/v8")
+        }
+    }
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_shared'
+                cppFlags "-frtti -fexceptions"
+            }
+            ndk {
+//                abiFilters "armeabi-v7a", "arm64-v8a", "x86_64"
+                abiFilters "armeabi-v7a", "x86_64"
+
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn([prepareHermes, prepareJSC, prepareV8])
+    }
+
+    sourceSets.main {
+        jniLibs.srcDir("$buildDir/third-party-ndk/hermes/jni")
+        jniLibs.srcDir("$buildDir/third-party-ndk/jsc/jni")
+        jniLibs.srcDir("$buildDir/third-party-ndk/v8/jni")
+        java {
+            srcDirs = ["src/main/java", "src/main/jni/thirdparty/fb/jni/java"]
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
