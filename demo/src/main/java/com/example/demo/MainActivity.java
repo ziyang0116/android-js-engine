@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.jsengine.Bridge;
 import com.jsengine.JSCallback;
+import com.jsengine.JavaScriptRuntime;
 import com.jsengine.hermes.HermesRuntime;
 import com.jsengine.jsc.JSCRuntime;
 import com.jsengine.v8.V8Runtime;
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
     Bridge jscBridge;
     Bridge v8Bridge;
 
+    JavaScriptRuntime hermesRuntime;
+    JavaScriptRuntime jscRuntime;
+    JavaScriptRuntime v8Runtime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,14 +46,28 @@ public class MainActivity extends AppCompatActivity {
         jscViewGroup = findViewById(R.id.jsc);
         v8ViewGroup = findViewById(R.id.v8);
         hermesBridge = new Bridge();
-        hermesBridge.initialize(new HermesRuntime());
+        hermesRuntime  = new HermesRuntime();
+        hermesBridge.initialize(hermesRuntime);
         control(hermesViewGroup, hermesBridge, "hermes");
         jscBridge = new Bridge();
-        jscBridge.initialize(new JSCRuntime());
+        jscRuntime = new JSCRuntime();
+        jscBridge.initialize(jscRuntime);
         control(jscViewGroup, jscBridge, "jsc");
         v8Bridge = new Bridge();
-        v8Bridge.initialize(new V8Runtime());
+        v8Runtime = new V8Runtime();
+        v8Bridge.initialize(v8Runtime);
         control(v8ViewGroup, v8Bridge, "v8");
+    }
+
+    @Override
+    public void finish(){
+        super.finish();
+        hermesBridge.destroy();
+        jscBridge.destroy();
+        v8Bridge.destroy();
+        hermesRuntime.close();
+        jscRuntime.close();
+        v8Runtime.close();
     }
 
     private void control(ViewGroup viewGroup, Bridge bridge, String txt) {

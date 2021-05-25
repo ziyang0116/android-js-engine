@@ -17,7 +17,6 @@ public class Bridge {
     // C++ parts
     private final HybridData mHybridData;
 
-
     public Bridge() {
         mHybridData = initHybrid();
     }
@@ -40,6 +39,10 @@ public class Bridge {
 
     public void loadScriptFromAssets(AssetManager assetManager, String assetName) {
         jniLoadScriptFromAssets(assetManager, assetName);
+    }
+
+    public void destroy(){
+        mHybridData.resetNative();
     }
 
     private static native HybridData initHybrid();

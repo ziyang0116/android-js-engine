@@ -92,13 +92,12 @@ android {
 
         externalNativeBuild {
             cmake {
+                // On embedder side pointer compression is DISABLED while on V8 side it's ENABLED
                 arguments '-DANDROID_STL=c++_shared'
                 cppFlags "-frtti -fexceptions"
             }
             ndk {
-//                abiFilters "armeabi-v7a", "arm64-v8a", "x86_64"
-                abiFilters "armeabi-v7a", "x86_64"
-
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86"
             }
         }
     }

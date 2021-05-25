@@ -9,6 +9,10 @@ add_library(v8-runtime SHARED
         V8Runtime.cpp
         OnLoad.cpp)
 
+if(${ANDROID_ABI} STREQUAL "arm64-v8a" OR ${ANDROID_ABI} STREQUAL  "x86_64")
+    target_compile_options(v8-runtime PRIVATE -DV8_COMPRESS_POINTERS)
+endif()
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 include_directories(${third_party_dir}/v8/include)
 
