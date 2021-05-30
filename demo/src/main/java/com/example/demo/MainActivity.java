@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 List<Object> args = new ArrayList<>();
                 args.add("arg1");
                 args.add("arg2");
-                Object result = bridge.callJSFunctionSync("__myfunctionSync", args);
+                Object result = bridge.callJSFunctionSync("myfunctionSync", args);
                 if (result instanceof Map) {
                     Log.d(TAG, ((Map) result).keySet().toString());
                 }
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 List<String> args = new ArrayList<>();
                 args.add("1");
                 args.add("2");
-                bridge.callJSFunction("__myfunction", args, new JSCallback() {
+                bridge.callJSFunction("myfunction", args, new JSCallback() {
                     @Override
                     public void invoke(Object object) {
                         if (object instanceof String) {
