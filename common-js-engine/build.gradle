@@ -2,6 +2,9 @@ plugins {
     id 'com.android.library'
 }
 
+group GROUP_ID
+version VERSION_NAME
+
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 task createNativeDepsDirectories {
@@ -107,11 +110,11 @@ android {
     }
 
     sourceSets.main {
-        jniLibs.srcDir("$buildDir/third-party-ndk/hermes/jni")
-        jniLibs.srcDir("$buildDir/third-party-ndk/jsc/jni")
-        jniLibs.srcDir("$buildDir/third-party-ndk/v8/jni")
+        jniLibs {
+            srcDirs = PUBLISH_RELEASE=='true' ? [] : ["$buildDir/third-party-ndk/hermes/jni", "$buildDir/third-party-ndk/jsc/jni", "$buildDir/third-party-ndk/v8/jni"]
+        }
         java {
-            srcDirs = ["src/main/java", "src/main/jni/thirdparty/fb/jni/java"]
+            srcDirs = ["src/main/java"]
         }
     }
 
@@ -132,13 +135,22 @@ android {
             version "3.10.2"
         }
     }
+
+    packagingOptions {
+        exclude '**/libfb.so'
+        exclude PUBLISH_RELEASE=='true' ? '**/libc++_shared.so':''
+        exclude PUBLISH_RELEASE=='true' ? '**/libv8-runtime.so':''
+        exclude PUBLISH_RELEASE=='true' ? '**/libjsc-runtime.so':''
+    }
+
 }
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.3.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation("androidx.annotation:annotation:1.2.0")
+    implementation project(":fbjni")
+}
+
+if (PUBLISH_RELEASE) {
+    apply from: rootProject.file('gradle/publish.gradle')
 }

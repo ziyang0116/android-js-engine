@@ -2,8 +2,6 @@
 
 android javascript interface, support V8, JSC and Hermes.
 
-[中文介绍](https://www.jianshu.com/p/db40ca71777e)
-
 ### How to run
 
 1. install js engine npm package

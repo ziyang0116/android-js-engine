@@ -11,7 +11,7 @@ set(lib_src_dir ${CMAKE_CURRENT_SOURCE_DIR})
 set(root_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../../..)
 
 set(third_party_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../../build/third-party-ndk)
-set(third_party_lib ${lib_src_dir}/../jni/thirdparty)
+set(third_party_lib ${root_dir}/fbjni-cpp)
 
 set(lib_build_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../../build/tmp/${ANDROID_ABI})
 file(MAKE_DIRECTORY ${lib_build_dir})

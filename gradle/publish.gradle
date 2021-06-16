@@ -1,0 +1,72 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def REPOSITORY_USERNAME = properties.getProperty('REPOSITORY_USERNAME')
+def REPOSITORY_PASSWORD = properties.getProperty('REPOSITORY_PASSWORD')
+
+static def getSnapshotRepositoryUrl() {
+    return 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+}
+
+def isReleaseBuild() {
+    return !VERSION_NAME.contains("SNAPSHOT");
+}
+
+def getRepositoryUrl() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def releaseUrl = properties.getProperty('RELEASE_REPOSITORY_URL')
+    return isReleaseBuild()? releaseUrl : getSnapshotRepositoryUrl();
+}
+
+println("version:" + VERSION_NAME);
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+                pom.groupId = project.group
+                pom.artifactId = project.name
+                pom.version = project.version
+
+                repository(url: getRepositoryUrl()) {
+                    authentication(userName: REPOSITORY_USERNAME, password: REPOSITORY_PASSWORD)
+                }
+
+            }
+        }
+    }
+
+    signing {
+        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+    task androidJavadocs(type: Javadoc) {
+        source = android.sourceSets.main.java.sourceFiles
+    }
+
+    task androidJavadocsJar(type: Jar) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.sourceFiles
+    }
+
+    artifacts {
+        archives androidSourcesJar
+        archives androidJavadocsJar
+    }
+}
+
+
+
+
