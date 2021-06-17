@@ -69,10 +69,13 @@ target_link_libraries(
         fb
         jsi
         log
-        ${log-lib})
+        ${log-lib}
+        -Wl,-hash-style=sysv)
 
 target_include_directories(
         javascript-lib
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${lib_src_dir}/jsi)
+
+target_compile_options(javascript-lib PRIVATE -fexceptions -frtti -Oz -fvisibility=hidden -fvisibility-inlines-hidden -g)

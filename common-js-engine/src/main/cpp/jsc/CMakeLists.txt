@@ -18,3 +18,6 @@ target_include_directories(jsc-runtime
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${lib_src_dir}/jsi
         ${third_party_dir}/jsc)
+
+target_compile_options(jsc-runtime PRIVATE -fexceptions -frtti -Oz -fvisibility=hidden -fvisibility-inlines-hidden -g)
+

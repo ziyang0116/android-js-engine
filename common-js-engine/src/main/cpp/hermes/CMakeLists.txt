@@ -25,3 +25,5 @@ target_include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${lib_src_dir}/jsi
         ${root_dir}/node_modules/hermes-engine/android/include)
+
+target_compile_options(hermes-runtime PRIVATE -fexceptions -frtti -Oz -fvisibility=hidden -fvisibility-inlines-hidden -g)

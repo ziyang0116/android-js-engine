@@ -5,7 +5,7 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 def REPOSITORY_USERNAME = properties.getProperty('REPOSITORY_USERNAME')
 def REPOSITORY_PASSWORD = properties.getProperty('REPOSITORY_PASSWORD')
-
+def groupId = properties.getProperty('GROUP_ID')
 static def getSnapshotRepositoryUrl() {
     return 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 }
@@ -30,7 +30,7 @@ afterEvaluate { project ->
                 beforeDeployment {
                     MavenDeployment deployment -> signing.signPom(deployment)
                 }
-                pom.groupId = project.group
+                pom.groupId = groupId
                 pom.artifactId = project.name
                 pom.version = project.version
 

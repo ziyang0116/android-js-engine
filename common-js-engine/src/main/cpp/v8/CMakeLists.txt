@@ -20,4 +20,7 @@ target_link_libraries(v8-runtime
         v8android
         fb
         jsi
-        javascript-lib)
+        javascript-lib
+        -Wl,-hash-style=sysv)
+
+target_compile_options(v8-runtime PRIVATE -fexceptions -frtti -Oz -fvisibility=hidden -fvisibility-inlines-hidden -g)

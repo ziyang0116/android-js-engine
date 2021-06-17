@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
 }
 
-group GROUP_ID
 version VERSION_NAME
 
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")

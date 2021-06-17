@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
 }
 
-group GROUP_ID
 version VERSION_NAME
 
 android {
@@ -55,6 +54,8 @@ android {
 
     packagingOptions {
         exclude '**/libc++_shared.so'
+        doNotStrip "*/arm64-v8a/*.so"
+        doNotStrip "*/armeabi-v7a/*.so"
     }
 
 }

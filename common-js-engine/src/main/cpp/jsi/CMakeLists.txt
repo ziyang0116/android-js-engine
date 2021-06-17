@@ -9,3 +9,5 @@ add_library(jsi STATIC
 
 target_include_directories(jsi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+target_compile_options(jsi PRIVATE -fexceptions -frtti -Oz -fvisibility=hidden -fvisibility-inlines-hidden -g)
+
