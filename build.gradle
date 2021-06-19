@@ -22,7 +22,8 @@ allprojects {
     }
 }
 
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
+if (PUBLISH_RELEASE) {
+    apply from: rootProject.file('gradle/publish.gradle')
 }
+
+

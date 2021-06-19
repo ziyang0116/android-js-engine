@@ -1,72 +1,88 @@
-apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'maven-publish'
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def REPOSITORY_USERNAME = properties.getProperty('REPOSITORY_USERNAME')
-def REPOSITORY_PASSWORD = properties.getProperty('REPOSITORY_PASSWORD')
-def groupId = properties.getProperty('GROUP_ID')
+def coreGroupId = properties.getProperty('GROUP_ID')
+def releaseUrl = properties.getProperty('RELEASE_REPOSITORY_URL')
+
 static def getSnapshotRepositoryUrl() {
     return 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 }
 
-def isReleaseBuild() {
-    return !VERSION_NAME.contains("SNAPSHOT");
-}
-
-def getRepositoryUrl() {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    def releaseUrl = properties.getProperty('RELEASE_REPOSITORY_URL')
-    return isReleaseBuild()? releaseUrl : getSnapshotRepositoryUrl();
-}
-
 println("version:" + VERSION_NAME);
 
-afterEvaluate { project ->
-    uploadArchives {
+static def getDependencyNode(scope, groupId, artifactId, version) {
+    Node node = new Node(null, 'dependency')
+    node.appendNode('groupId', groupId)
+    node.appendNode('artifactId', artifactId)
+    node.appendNode('version', version)
+    node.appendNode('scope', scope)
+    return node
+}
+
+def sourceJar(String name, String path) {
+    return tasks.create("source${name.capitalize()}Jar", Jar) {
+        group = "publishing"
+        description = "package ${name} source to jar"
+        from "$path/src/main/java"
+        from "$path/src/main/kotlin"
+        destinationDir = file("$path/build/libs/")
+        classifier = 'sources'
+    }
+}
+
+afterEvaluate {
+
+    publishing {
+        publications {
+            fbjni(MavenPublication) {
+                groupId coreGroupId
+                artifactId 'fbjni'
+                version VERSION_NAME
+                artifact("fbjni/build/outputs/aar/fbjni-release.aar")
+                artifact sourceJar("fbjni", "fbjni")
+
+                pom.withXml {
+                    def root = asNode()
+                    def dependencies = root.appendNode('dependencies')
+                    dependencies.append(getDependencyNode('compile', 'androidx.annotation', 'annotation', '1.2.0'))
+                }
+            }
+
+            commonJsEngine(MavenPublication) {
+                groupId coreGroupId
+                artifactId 'common-js-engine'
+                version VERSION_NAME
+                artifact("common-js-engine/build/outputs/aar/common-js-engine-release.aar")
+                artifact sourceJar("common-js-engine", "common-js-engine")
+
+                pom.withXml {
+                    def root = asNode()
+                    def dependencies = root.appendNode('dependencies')
+                    dependencies.append(getDependencyNode('compile', 'androidx.annotation', 'annotation', '1.2.0'))
+                    dependencies.append(getDependencyNode('compile', coreGroupId, 'fbjni', VERSION_NAME))
+                }
+            }
+        }
         repositories {
-            mavenDeployer {
-                beforeDeployment {
-                    MavenDeployment deployment -> signing.signPom(deployment)
-                }
-                pom.groupId = groupId
-                pom.artifactId = project.name
-                pom.version = project.version
-
-                repository(url: getRepositoryUrl()) {
-                    authentication(userName: REPOSITORY_USERNAME, password: REPOSITORY_PASSWORD)
-                }
-
+            maven {
+                url = VERSION_NAME.endsWith('SNAPSHOT') ? getSnapshotRepositoryUrl() : releaseUrl
             }
         }
     }
+}
 
-    signing {
-        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
-        sign configurations.archives
-    }
-
-    task androidJavadocs(type: Javadoc) {
-        source = android.sourceSets.main.java.sourceFiles
-    }
-
-    task androidJavadocsJar(type: Jar) {
-        classifier = 'javadoc'
-        from androidJavadocs.destinationDir
-    }
-
-    task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.sourceFiles
-    }
-
-    artifacts {
-        archives androidSourcesJar
-        archives androidJavadocsJar
+def setGeneratePomFileAndDepends(publicationName) {
+    model {
+        tasks."generatePomFileFor${publicationName.capitalize()}Publication" {
+            destination = file("$buildDir/pom/$publicationName-pom.xml")
+            dependsOn(':fbjni:assembleRelease', ':common-js-engine:assembleRelease')
+        }
     }
 }
 
-
+setGeneratePomFileAndDepends("fbjni")
+setGeneratePomFileAndDepends("commonJsEngine")
 
 

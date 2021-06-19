@@ -46,7 +46,6 @@ namespace jsengine {
 
 
     void Bridge::initializeBridge(
-            // This executor is actually a factory holder.
             JavaScriptRuntimeHolder *javaScriptRuntimeHolder) {
         instance = javaScriptRuntimeHolder->getJavaScriptRuntime();
         bindNativeLogger();

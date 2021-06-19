@@ -140,6 +140,8 @@ android {
         exclude PUBLISH_RELEASE=='true' ? '**/libc++_shared.so':''
         exclude PUBLISH_RELEASE=='true' ? '**/libv8-runtime.so':''
         exclude PUBLISH_RELEASE=='true' ? '**/libjsc-runtime.so':''
+        doNotStrip "*/arm64-v8a/*.so"
+        doNotStrip "*/armeabi-v7a/*.so"
     }
 
 }
@@ -150,6 +152,7 @@ dependencies {
     implementation project(":fbjni")
 }
 
-if (PUBLISH_RELEASE) {
-    apply from: rootProject.file('gradle/publish.gradle')
+
+afterEvaluate {
+    tasks.getByName("assembleRelease").dependsOn([prepareHermes, prepareJSC, prepareV8])
 }
