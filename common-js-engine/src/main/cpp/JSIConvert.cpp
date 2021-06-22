@@ -26,7 +26,7 @@ namespace jsengine {
             Array ret = Array(runtime, jlist->size());
             int i = 0;
             for (auto &elem : *jlist) {
-                ret.setValueAtIndex(runtime, i, elem->toStdString());
+                ret.setValueAtIndex(runtime, i, String::createFromUtf8(runtime, elem->toStdString()));
                 ++i;
             }
             return std::move(ret);
@@ -38,7 +38,7 @@ namespace jsengine {
                     ret.setProperty(
                             runtime,
                             PropNameID::forUtf8(runtime, entry.first->toStdString()),
-                            entry.second->toStdString());
+                            String::createFromUtf8(runtime, entry.second->toStdString()));
                 }
             }
             return std::move(ret);

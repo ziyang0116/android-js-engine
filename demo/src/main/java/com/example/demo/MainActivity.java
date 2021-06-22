@@ -94,10 +94,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 List<Object> args = new ArrayList<>();
                 args.add("arg1");
-                args.add("arg2");
+                args.add("arg2中文");
                 Object result = bridge.callJSFunctionSync("myfunctionSync", args);
                 if (result instanceof Map) {
-                    Log.d(TAG, ((Map) result).keySet().toString());
+                    Map map =  (Map) result;
+                    for (Object key : map.keySet()) {
+                        Object value = map.get(key);
+                        Log.d(TAG, "key:" + key + ",value:" + value);
+                    }
                 }
             }
         });

@@ -22,7 +22,7 @@ allprojects {
     }
 }
 
-if (PUBLISH_RELEASE) {
+if (PUBLISH_RELEASE == 'true') {
     apply from: rootProject.file('gradle/publish.gradle')
 }
 
