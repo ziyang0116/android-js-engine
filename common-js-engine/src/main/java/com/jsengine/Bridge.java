@@ -15,6 +15,7 @@ public class Bridge {
     }
 
     // C++ parts
+    @DoNotStrip
     private final HybridData mHybridData;
 
     public Bridge() {

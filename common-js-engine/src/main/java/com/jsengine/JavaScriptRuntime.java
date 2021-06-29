@@ -6,6 +6,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public abstract class JavaScriptRuntime {
 
+    @DoNotStrip
     private final HybridData mHybridData;
 
     protected JavaScriptRuntime(HybridData hybridData) {
