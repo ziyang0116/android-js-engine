@@ -20,7 +20,11 @@ namespace jsengine {
 
         static facebook::jni::local_ref<jhybriddata> initHybridDefaultConfig(
                 facebook::jni::alias_ref<jclass>) {
-            return makeCxxInstance(facebook::jsc::makeJSCRuntime());
+            return makeCxxInstance();
+        }
+
+        std::shared_ptr<facebook::jsi::Runtime> getJavaScriptRuntime(){
+            return facebook::jsc::makeJSCRuntime();
         }
 
         static void registerNatives() {

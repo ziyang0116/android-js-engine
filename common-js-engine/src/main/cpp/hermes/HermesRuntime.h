@@ -21,7 +21,11 @@ namespace jsengine {
 
         static facebook::jni::local_ref<jhybriddata> initHybridDefaultConfig(
                 facebook::jni::alias_ref<jclass>) {
-            return makeCxxInstance(facebook::hermes::makeHermesRuntime());
+            return makeCxxInstance();
+        }
+
+        std::shared_ptr<facebook::jsi::Runtime> getJavaScriptRuntime(){
+            return facebook::hermes::makeHermesRuntime();
         }
 
         static void registerNatives() {

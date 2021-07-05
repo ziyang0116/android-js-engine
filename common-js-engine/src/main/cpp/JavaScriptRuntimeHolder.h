@@ -13,16 +13,11 @@ namespace jsengine {
         static constexpr auto kJavaDescriptor =
                 "Lcom/jsengine/JavaScriptRuntime;";
 
-        std::shared_ptr<facebook::jsi::Runtime> getJavaScriptRuntime() {
-            return mJavaScriptRuntime;
-        }
+        virtual std::shared_ptr<facebook::jsi::Runtime> getJavaScriptRuntime()=0;
 
     protected:
-        JavaScriptRuntimeHolder(std::shared_ptr<facebook::jsi::Runtime> runtime)
-                : mJavaScriptRuntime(runtime) {}
+        JavaScriptRuntimeHolder() {}
 
-    private:
-        std::shared_ptr<facebook::jsi::Runtime> mJavaScriptRuntime;
     };
 
 }

@@ -22,8 +22,13 @@ namespace jsengine {
 
         static facebook::jni::local_ref<jhybriddata> initHybrid(
                 facebook::jni::alias_ref<jclass>, const std::string &timezoneId) {
-            return makeCxxInstance(std::make_unique<facebook::V8Runtime>(timezoneId));
+            return makeCxxInstance(timezoneId);
         }
+
+        std::shared_ptr<facebook::jsi::Runtime> getJavaScriptRuntime(){
+            return std::make_unique<facebook::V8Runtime>(*mTimezoneId);
+        }
+
 
         static void registerNatives() {
             registerHybrid(
@@ -33,8 +38,13 @@ namespace jsengine {
                                     V8RuntimeHolder::initHybrid)
                     });
         }
+    protected:
+        V8RuntimeHolder(const std::string &timezoneId) {
+            *mTimezoneId = timezoneId;
+        }
 
     private:
+        std::string *mTimezoneId;
         friend HybridBase;
         using HybridBase::HybridBase;
     };
