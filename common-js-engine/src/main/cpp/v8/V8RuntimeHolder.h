@@ -26,7 +26,7 @@ namespace jsengine {
         }
 
         std::shared_ptr<facebook::jsi::Runtime> getJavaScriptRuntime(){
-            return std::make_unique<facebook::V8Runtime>(*mTimezoneId);
+            return std::make_unique<facebook::V8Runtime>(mTimezoneId);
         }
 
 
@@ -40,11 +40,11 @@ namespace jsengine {
         }
     protected:
         V8RuntimeHolder(const std::string &timezoneId) {
-            *mTimezoneId = timezoneId;
+            mTimezoneId = timezoneId;
         }
 
     private:
-        std::string *mTimezoneId;
+        std::string mTimezoneId;
         friend HybridBase;
         using HybridBase::HybridBase;
     };
