@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jsengine.Bridge;
 import com.jsengine.JSCallback;
@@ -102,6 +103,21 @@ public class MainActivity extends AppCompatActivity {
                         Object value = map.get(key);
                         Log.d(TAG, "key:" + key + ",value:" + value);
                     }
+                }
+            }
+        });
+        Button callJsAddFunc = viewGroup.findViewById(R.id.callJsAddFunc);
+        callJsAddFunc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Object> args = new ArrayList<>();
+                args.add(1);
+                args.add(2);
+                Object result = bridge.callJSFunctionSync("intAdd", args);
+                if(result instanceof Integer){
+                    Toast.makeText(MainActivity.this, "result = " + result, Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(MainActivity.this, "wft? " + result, Toast.LENGTH_SHORT).show();
                 }
             }
         });

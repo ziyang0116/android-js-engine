@@ -375,6 +375,12 @@ class PropNameID : public Pointer {
     return runtime.createPropNameIDFromUtf8(utf8, length);
   }
 
+    /// Create a PropNameID from utf8 values.  The data is copied.
+    static PropNameID
+    forObj(Runtime& runtime, const uint8_t* utf8, size_t length) {
+      return runtime.createPropNameIDFromUtf8(utf8, length);
+    }
+
   /// Create a PropNameID from utf8-encoded octets stored in a
   /// std::string.  The string data is transformed and copied.
   static PropNameID forUtf8(Runtime& runtime, const std::string& utf8) {
