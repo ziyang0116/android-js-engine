@@ -21,24 +21,24 @@ namespace jsengine {
         } else if (jObject->isInstanceOf(JInteger::javaClassStatic())) {
             JInteger *jInteger = static_cast<JInteger *>(jObject.operator->());
             return jInteger->value();
-        } else if (jObject->isInstanceOf(JList<jstring>::javaClassStatic())) {
-            JList<jstring> *jlist = static_cast<JList<jstring> *>(jObject.operator->());
+        } else if (jObject->isInstanceOf(JList<jobject>::javaClassStatic())) {
+            JList<jobject> *jlist = static_cast<JList<jobject> *>(jObject.operator->());
             Array ret = Array(runtime, jlist->size());
             int i = 0;
             for (auto &elem : *jlist) {
-                ret.setValueAtIndex(runtime, i, String::createFromUtf8(runtime, elem->toStdString()));
+                ret.setValueAtIndex(runtime, i, valueFromJObject(runtime, elem));
                 ++i;
             }
             return std::move(ret);
-        } else if (jObject->isInstanceOf(JMap<jstring, jstring>::javaClassStatic())) {
-            JMap<jstring, jstring> *jmap = static_cast<JMap<jstring, jstring> *>(jObject.operator->());
+        } else if (jObject->isInstanceOf(JMap<jobject , jobject>::javaClassStatic())) {
+            JMap<jobject, jobject> *jmap = static_cast<JMap<jobject, jobject> *>(jObject.operator->());
             Object ret(runtime);
             for (const auto &entry : *jmap) {
                 if (entry.first) {
                     ret.setProperty(
                             runtime,
-                            PropNameID::forUtf8(runtime, entry.first->toStdString()),
-                            String::createFromUtf8(runtime, entry.second->toStdString()));
+                            PropNameID::forUtf8(runtime, entry.first->toString()), //fixme unfixable now, java args map must be "Map<String, ...>"
+                            valueFromJObject(runtime, entry.second));
                 }
             }
             return std::move(ret);
